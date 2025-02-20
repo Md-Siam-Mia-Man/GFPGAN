@@ -197,45 +197,33 @@ def initialize_models():
             (
                 GFPGAN_MODEL_PATH,
                 "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth",
-                "GFPGANv1.4" # Model Name for UI
+                "GFPGANv1.4"
             ),
             (
                 REALESRGAN_MODEL_PATH,
                 "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
-                "RealESRGAN_x4plus" # Model Name for UI
+                "RealESRGAN_x4plus"
             ),
             (
                 DETECTION_MODEL_PATH,
                 "https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_Resnet50_Final.pth",
-                "Face Detection" # Model Name for UI
+                "Face Detection"
             ),
             (
                 PARSING_MODEL_PATH,
                 "https://github.com/xinntao/facexlib/releases/download/v0.2.2/parsing_parsenet.pth",
-                "Face Parsing" # Model Name for UI
+                "Face Parsing"
             ),
         ]
 
-        for path, url, model_name in model_paths: # Unpack model_name
+        for path, url, model_name in model_paths:
             if not os.path.exists(path):
                 os.makedirs("gfpgan/weights", exist_ok=True)
-                for update in download_model(url, path, model_name): # Pass model_name to download_model
+                for update in download_model(url, path, model_name):
                     yield update
-                    if update.get("status") == "error": # Propagate error status if download fails
-                        yield {"status": "model_init_error", "model_name": model_name, "error_message": update.get("error_message")} # Specific error for model init failure
-                        return # Stop initialization if any model fails
-
-            # Verify file integrity by checking file size (after successful download or if already exists)
-            expected_size = int(requests.head(url).headers.get("content-length", 0))
-            actual_size = os.path.getsize(path)
-            if actual_size != expected_size:
-                logger.warning(f"File {path} is corrupted. Re-downloading...") # Log warning about corruption
-                os.remove(path)
-                for update in download_model(url, path, model_name): # Re-download, pass model_name
-                    yield update
-                    if update.get("status") == "error": # Propagate error status if re-download also fails
+                    if update.get("status") == "error":
                         yield {"status": "model_init_error", "model_name": model_name, "error_message": update.get("error_message")}
-                        return # Stop initialization if re-download fails
+                        return
 
         gfpganer = GFPGANer(
             model_path=GFPGAN_MODEL_PATH,
@@ -269,13 +257,12 @@ def initialize_models():
         gfpganer.bg_upsampler = bg_upsampler
         model_initialized = True
 
-        # Yield GPU and half precision information
         yield {
             "status": "info",
             "gpu_detected": gpu_name,
             "half_precision": half_precision,
         }
-        yield {"status": "ready"} # Indicate models are initialized and ready
+        yield {"status": "ready"}
 
 
 @app.route("/", methods=["GET", "POST"])
