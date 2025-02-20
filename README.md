@@ -1,5 +1,5 @@
 # 🌟 GFPGAN Image Enhancement
-<img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/raw/master/assets/img/gfpgan.png"></img>
+<img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/img/gfpgan.png"></img>
 
 ## 🗂 Table of Contents
 - 📖 [Introduction](#-introduction)
