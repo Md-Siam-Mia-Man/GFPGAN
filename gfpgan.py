@@ -22,9 +22,9 @@ from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
 import zipfile
 import threading
-import logging # Import logging module
-from requests.adapters import Retry, HTTPAdapter # Import for retry mechanism
-from requests.exceptions import RequestException # Import for catching request exceptions
+import logging
+from requests.adapters import Retry, HTTPAdapter
+from requests.exceptions import RequestException
 
 app = Flask(__name__)
 
@@ -36,6 +36,7 @@ UPLOAD_FOLDER = "Input"
 OUTPUT_FOLDER = "Output"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+# https://lh3.googleusercontent.com/a/ACg8ocLRd3ZnkGIdADuCe_S2O3uszKocUy0Me2uvfsfsk2fumBvNikQ=s96-c
 
 # Model paths
 GFPGAN_MODEL_PATH = "gfpgan/weights/GFPGANv1.4.pth"
@@ -52,8 +53,8 @@ model_initialized = False
 version_file = "gfpgan/version.py"
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__) # Get logger instance
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logger = logging.getLogger(__name__)
 
 
 def readme():
@@ -64,9 +65,7 @@ def readme():
 
 def get_git_hash():
     def _minimal_ext_cmd(cmd):
-        env = {
-            k: v for k, v in os.environ.items() if k in ["SYSTEMROOT", "PATH", "HOME"]
-        }
+        env = {k: v for k, v in os.environ.items() if k in ["SYSTEMROOT", "PATH", "HOME"]}
         env.update({"LANGUAGE": "C", "LANG": "C", "LC_ALL": "C"})
         out = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env).communicate()[0]
         return out
@@ -98,10 +97,7 @@ version_info = ({})
     sha = get_hash()
     with open("VERSION", "r") as f:
         SHORT_VERSION = f.read().strip()
-    VERSION_INFO = ", ".join(
-        [x if x.isdigit() else f'"{x}"' for x in SHORT_VERSION.split(".")]
-    )
-
+    VERSION_INFO = ", ".join([x if x.isdigit() else f'"{x}"' for x in SHORT_VERSION.split(".")])
     version_file_str = content.format(time.asctime(), SHORT_VERSION, sha, VERSION_INFO)
     with open(version_file, "w") as f:
         f.write(version_file_str)
@@ -130,30 +126,47 @@ def format_size(bytes):
     else:
         return f"{bytes / (1024 * 1024 * 1024):.2f} GB"
 
-def download_model(url, destination, model_name): # Added model_name
-    logger.info(f"Downloading model: {model_name} from {url} to {destination}") # Log model download start
+
+def download_model(url, destination, model_name):
+    logger.info(f"Downloading model: {model_name} from {url} to {destination}")
 
     session = requests.Session()
     retry_strategy = Retry(
-        total=5, # Number of retries
-        status_forcelist=[429, 500, 502, 503, 504], # Status codes to retry on
-        method_whitelist=["HEAD", "GET", "OPTIONS"] # Methods to retry
+        total=5,
+        status_forcelist=[429, 500, 502, 503, 504],
+        allowed_methods=["HEAD", "GET", "OPTIONS"]
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("https://", adapter)
     session.mount("http://", adapter)
 
+    # Check for an existing partial download
+    downloaded_size = 0
+    if os.path.exists(destination):
+        downloaded_size = os.path.getsize(destination)
+
+    headers = {}
+    if downloaded_size > 0:
+        headers["Range"] = f"bytes={downloaded_size}-"
 
     try:
-        response = session.get(url, stream=True, timeout=10) # Added timeout
-        response.raise_for_status()  # Raise HTTPError for bad responses (4xx or 5xx)
-        total_size = int(response.headers.get("content-length", 0))
-        downloaded_size = 0
+        response = session.get(url, stream=True, headers=headers, timeout=10)
+        response.raise_for_status()
+
+        # Calculate total size
+        if "Content-Range" in response.headers:
+            # Example header: "bytes 1000-5000/10000"
+            total_size = int(response.headers["Content-Range"].split("/")[-1])
+        else:
+            total_size = downloaded_size + int(response.headers.get("content-length", 0))
+
         start_time = time.time()
-        last_bytes_downloaded = 0
+        last_bytes_downloaded = downloaded_size
         last_time = start_time
 
-        with open(destination, "wb") as file:
+        # Open file in append mode if resuming; otherwise, write mode.
+        mode = "ab" if downloaded_size > 0 else "wb"
+        with open(destination, mode) as file:
             for data in response.iter_content(chunk_size=1024):
                 file.write(data)
                 downloaded_size += len(data)
@@ -162,29 +175,24 @@ def download_model(url, destination, model_name): # Added model_name
                 time_interval = current_time - last_time
                 bytes_in_interval = downloaded_size - last_bytes_downloaded
 
-                if time_interval >= 0.1:  # Update speed every 100ms
+                if time_interval >= 0.1:  # Update progress every 100ms
                     speed_bps = bytes_in_interval / time_interval
-                    speed_kbs = speed_bps / 1024
                     yield {
                         "status": "downloading",
-                        "model_name": model_name, # Include model_name in update
+                        "model_name": model_name,
                         "progress": (downloaded_size / total_size) * 100,
-                        "percentage": int(
-                            (downloaded_size / total_size) * 100
-                        ),  # Adding percentage for frontend
-                        "speed": format_size(int(speed_bps))
-                        + "/s",  # Speed in KB/s or MB/s
+                        "percentage": int((downloaded_size / total_size) * 100),
+                        "speed": format_size(int(speed_bps)) + "/s",
                     }
                     last_bytes_downloaded = downloaded_size
                     last_time = current_time
 
-        yield {"status": "completed", "model_name": model_name} # Indicate completion and model_name
+        yield {"status": "completed", "model_name": model_name}
 
-    except RequestException as e: # Catch request exceptions for more robust error handling
-        logger.error(f"Download failed for model {model_name} from {url} to {destination}. Error: {e}") # Log detailed error
-        if os.path.exists(destination): # Remove partially downloaded file if download failed
-            os.remove(destination)
-        yield {"status": "error", "model_name": model_name, "error_message": str(e)} # Yield error status and message
+    except RequestException as e:
+        logger.error(f"Download failed for model {model_name} from {url} to {destination}. Error: {e}")
+        # Do not remove the partial file so that future attempts can resume the download.
+        yield {"status": "error", "model_name": model_name, "error_message": str(e)}
 
 
 def initialize_models():
@@ -197,22 +205,22 @@ def initialize_models():
             (
                 GFPGAN_MODEL_PATH,
                 "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth",
-                "GFPGANv1.4"
+                "GFPGANv1.4",
             ),
             (
                 REALESRGAN_MODEL_PATH,
                 "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth",
-                "RealESRGAN_x4plus"
+                "RealESRGAN_x4plus",
             ),
             (
                 DETECTION_MODEL_PATH,
                 "https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_Resnet50_Final.pth",
-                "Face Detection"
+                "Face Detection",
             ),
             (
                 PARSING_MODEL_PATH,
                 "https://github.com/xinntao/facexlib/releases/download/v0.2.2/parsing_parsenet.pth",
-                "Face Parsing"
+                "Face Parsing",
             ),
         ]
 
@@ -222,7 +230,27 @@ def initialize_models():
                 for update in download_model(url, path, model_name):
                     yield update
                     if update.get("status") == "error":
-                        yield {"status": "model_init_error", "model_name": model_name, "error_message": update.get("error_message")}
+                        yield {
+                            "status": "model_init_error",
+                            "model_name": model_name,
+                            "error_message": update.get("error_message"),
+                        }
+                        return
+
+            # Verify file integrity by checking file size (after download or if already exists)
+            expected_size = int(requests.head(url).headers.get("content-length", 0))
+            actual_size = os.path.getsize(path)
+            if actual_size != expected_size:
+                logger.warning(f"File {path} is corrupted. Re-downloading...")
+                os.remove(path)
+                for update in download_model(url, path, model_name):
+                    yield update
+                    if update.get("status") == "error":
+                        yield {
+                            "status": "model_init_error",
+                            "model_name": model_name,
+                            "error_message": update.get("error_message"),
+                        }
                         return
 
         gfpganer = GFPGANer(
@@ -271,7 +299,7 @@ def index():
         # Ensure models are initialized
         if not model_initialized:
             for _ in initialize_models():
-                pass  # Wait for models to initialize
+                pass
 
         upscale_factor = int(request.form.get("upscale_factor", 4))
         gfpganer.upscale = upscale_factor
@@ -304,7 +332,7 @@ def index():
 
                 processed_images.append(output_filename)
             except Exception as e:
-                logger.error(f"Error processing file {filename}: {e}") # Log error during processing
+                logger.error(f"Error processing file {filename}: {e}")
 
         return jsonify({"status": "success", "images": processed_images})
 
@@ -341,7 +369,7 @@ def clear_history():
                 if os.path.isfile(file_path) or os.path.islink(file_path):
                     os.unlink(file_path)
             except Exception as e:
-                logger.error(f"Failed to delete {file_path}. Reason: {e}") # Log error during clear history
+                logger.error(f"Failed to delete {file_path}. Reason: {e}")
 
     return redirect(url_for("index"))
 
@@ -354,14 +382,13 @@ def download_all():
             file_path = os.path.join(OUTPUT_FOLDER, file_name)
             if os.path.isfile(file_path):
                 try:
-                    # Check if the file is readable and not empty
                     with open(file_path, "rb") as f:
                         if os.path.getsize(file_path) > 0:
                             zipf.writestr(file_name, f.read())
                         else:
                             raise IOError(f"File is empty: {file_name}")
                 except Exception as e:
-                    logger.error(f"Error adding file {file_name} to zip: {e}") # Log error during zip creation
+                    logger.error(f"Error adding file {file_name} to zip: {e}")
 
     return send_from_directory(OUTPUT_FOLDER, "Enhanced-Images.zip", as_attachment=True)
 
