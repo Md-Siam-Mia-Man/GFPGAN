@@ -1,6 +1,6 @@
 # 🌟 GFPGAN Image Enhancement
-# WebUI
-<img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/img/gfpgan.png"></img>
+# 💻 WebUI
+<img style="max-width: 600px" src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/img/gfpgan.png"></img>
 
 ## 🗂 Table of Contents
 - 📖 [Introduction](#-introduction)
