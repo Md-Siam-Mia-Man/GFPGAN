@@ -16,3 +16,4 @@ tb-nightly
 tqdm
 yapf
 flask-limiter
+chardet
