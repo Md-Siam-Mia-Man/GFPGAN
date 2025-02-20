@@ -36,7 +36,6 @@ UPLOAD_FOLDER = "Input"
 OUTPUT_FOLDER = "Output"
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(OUTPUT_FOLDER, exist_ok=True)
-# https://lh3.googleusercontent.com/a/ACg8ocLRd3ZnkGIdADuCe_S2O3uszKocUy0Me2uvfsfsk2fumBvNikQ=s96-c
 
 # Model paths
 GFPGAN_MODEL_PATH = "gfpgan/weights/GFPGANv1.4.pth"
@@ -53,7 +52,9 @@ model_initialized = False
 version_file = "gfpgan/version.py"
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 logger = logging.getLogger(__name__)
 
 
@@ -65,7 +66,9 @@ def readme():
 
 def get_git_hash():
     def _minimal_ext_cmd(cmd):
-        env = {k: v for k, v in os.environ.items() if k in ["SYSTEMROOT", "PATH", "HOME"]}
+        env = {
+            k: v for k, v in os.environ.items() if k in ["SYSTEMROOT", "PATH", "HOME"]
+        }
         env.update({"LANGUAGE": "C", "LANG": "C", "LC_ALL": "C"})
         out = subprocess.Popen(cmd, stdout=subprocess.PIPE, env=env).communicate()[0]
         return out
@@ -97,7 +100,9 @@ version_info = ({})
     sha = get_hash()
     with open("VERSION", "r") as f:
         SHORT_VERSION = f.read().strip()
-    VERSION_INFO = ", ".join([x if x.isdigit() else f'"{x}"' for x in SHORT_VERSION.split(".")])
+    VERSION_INFO = ", ".join(
+        [x if x.isdigit() else f'"{x}"' for x in SHORT_VERSION.split(".")]
+    )
     version_file_str = content.format(time.asctime(), SHORT_VERSION, sha, VERSION_INFO)
     with open(version_file, "w") as f:
         f.write(version_file_str)
@@ -134,7 +139,7 @@ def download_model(url, destination, model_name):
     retry_strategy = Retry(
         total=5,
         status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["HEAD", "GET", "OPTIONS"]
+        allowed_methods=["HEAD", "GET", "OPTIONS"],
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("https://", adapter)
@@ -158,7 +163,9 @@ def download_model(url, destination, model_name):
             # Example header: "bytes 1000-5000/10000"
             total_size = int(response.headers["Content-Range"].split("/")[-1])
         else:
-            total_size = downloaded_size + int(response.headers.get("content-length", 0))
+            total_size = downloaded_size + int(
+                response.headers.get("content-length", 0)
+            )
 
         start_time = time.time()
         last_bytes_downloaded = downloaded_size
@@ -190,7 +197,9 @@ def download_model(url, destination, model_name):
         yield {"status": "completed", "model_name": model_name}
 
     except RequestException as e:
-        logger.error(f"Download failed for model {model_name} from {url} to {destination}. Error: {e}")
+        logger.error(
+            f"Download failed for model {model_name} from {url} to {destination}. Error: {e}"
+        )
         # Do not remove the partial file so that future attempts can resume the download.
         yield {"status": "error", "model_name": model_name, "error_message": str(e)}
 
@@ -227,22 +236,6 @@ def initialize_models():
         for path, url, model_name in model_paths:
             if not os.path.exists(path):
                 os.makedirs("gfpgan/weights", exist_ok=True)
-                for update in download_model(url, path, model_name):
-                    yield update
-                    if update.get("status") == "error":
-                        yield {
-                            "status": "model_init_error",
-                            "model_name": model_name,
-                            "error_message": update.get("error_message"),
-                        }
-                        return
-
-            # Verify file integrity by checking file size (after download or if already exists)
-            expected_size = int(requests.head(url).headers.get("content-length", 0))
-            actual_size = os.path.getsize(path)
-            if actual_size != expected_size:
-                logger.warning(f"File {path} is corrupted. Re-downloading...")
-                os.remove(path)
                 for update in download_model(url, path, model_name):
                     yield update
                     if update.get("status") == "error":
