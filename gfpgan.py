@@ -348,11 +348,13 @@ def initialize_models_route():
         try:
             for update in initialize_models():
                 yield f"data: {json.dumps(update)}\n\n"
+        except GeneratorExit:
+            logger.warning("Client disconnected during model initialization.")
         except Exception as e:
             logger.error(f"Error during model initialization: {e}")
             yield f"data: {json.dumps({'status': 'model_init_error', 'error_message': str(e)})}\n\n"
         finally:
-            yield "event: close\ndata: close\n\n"  # Explicitly close the connection
+            yield "event: close\ndata: close\n\n"
 
     return app.response_class(generate(), mimetype="text/event-stream")
 
@@ -416,4 +418,4 @@ def remove_file():
 
 if __name__ == "__main__":
     write_version_py()
-    app.run(host="0.0.0.0", port=3005, debug=True)
+    app.run(host="0.0.0.0", port=3005, debug=False)
