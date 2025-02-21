@@ -208,6 +208,16 @@ def initialize_models():
     global gfpganer, bg_upsampler, model_initialized
     with model_initialization_lock:
         if model_initialized:
+            yield {
+                "status": "info",
+                "gpu_detected": (
+                    torch.cuda.get_device_name(0)
+                    if torch.cuda.is_available()
+                    else "CPU"
+                ),
+                "half_precision": torch.cuda.is_available(),
+            }
+            yield {"status": "ready"}
             return
 
         model_paths = [
@@ -335,8 +345,14 @@ def index():
 @app.route("/initialize_models", methods=["GET"])
 def initialize_models_route():
     def generate():
-        for update in initialize_models():
-            yield f"data: {json.dumps(update)}\n\n"
+        try:
+            for update in initialize_models():
+                yield f"data: {json.dumps(update)}\n\n"
+        except Exception as e:
+            logger.error(f"Error during model initialization: {e}")
+            yield f"data: {json.dumps({'status': 'model_init_error', 'error_message': str(e)})}\n\n"
+        finally:
+            yield "event: close\ndata: close\n\n"  # Explicitly close the connection
 
     return app.response_class(generate(), mimetype="text/event-stream")
 
