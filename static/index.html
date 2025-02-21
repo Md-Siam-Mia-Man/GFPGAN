@@ -191,7 +191,6 @@
             font-size: 30px;
             color: var(--color-2);
             text-shadow: 0 0 5px var(--color-1);
-            /* Added glow effect */
         }
 
         .file-drop-area:hover,
@@ -317,71 +316,57 @@
         }
 
         .progress-notification {
-            /* Renamed to progress-notification to avoid CSS conflict and for clarity */
             position: fixed;
             top: 10px;
             left: 10px;
             background-color: var(--color-3);
             color: var(--color-2);
             padding: 15px 20px;
-            /* Increased padding for better visual */
             border-radius: 10px;
             box-shadow: var(--shadow);
             z-index: 1000;
             display: none;
-            width: 300px;
-            /* Fixed width for better layout */
+            width: auto;
             text-align: left;
-            /* Left align text inside notification */
         }
 
         .progress-notification p {
             margin: 5px 0;
-            /* Add some spacing between text elements */
             background-color: transparent;
-            /* Ensure background is transparent */
             color: var(--color-2);
         }
 
         .progress-notification p span {
             margin: 5px 0;
-            /* Add some spacing between text elements */
             background-color: transparent;
-            /* Ensure background is transparent */
             color: var(--color-2);
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
 
         .progress-bar {
             height: 10px;
-            /* Reduced height for sleeker look */
             overflow: hidden;
             position: relative;
             background-color: var(--color-3);
-            /* Lighter background for progress bar track */
             border-radius: 5px;
-            /* Rounded progress bar */
             border: 1px solid var(--color-1);
-            /* Added border for better definition */
         }
 
         .progress-fill {
             height: 100%;
             width: 0%;
-            /* Start with 0 width and update dynamically */
-            background-color: var(--color-1);
-            /* Fill color */
+            background-color: var(--color-2);
             border-radius: 5px;
             transition: width 0.3s ease;
-            /* Smooth width transition */
         }
 
         .progress-percentage,
         .download-speed {
             font-size: 14px;
-            /* Smaller font for percentage and speed */
-            font-weight: normal;
-            /* Regular font weight */
+            font-weight: bold;
         }
 
 
@@ -395,7 +380,6 @@
         }
 
         .progress-container .progress-bar {
-            /* Targeting progress bar within progress-container */
             height: 30px;
             overflow: hidden;
             position: relative;
@@ -406,7 +390,6 @@
         }
 
         .progress-container .progress-bar .progress-fill {
-            /* Targeting progress-fill within progress-container's progress-bar */
             height: 100%;
             width: 200%;
             position: absolute;
@@ -422,7 +405,7 @@
             }
 
             100% {
-                transform: translateX(0);
+                transform: translateX(10%);
             }
         }
 
@@ -467,13 +450,25 @@
             text-align: center;
         }
 
+        button {
+            margin: 5px 5px;
+            padding: 5px 5px;
+        }
+
         button:hover,
         button:focus,
         button:active {
             transform: scale(1.05);
         }
 
-        .app-title {
+        #app-title-container {
+            width: 95%;
+            position: relative;
+            margin: auto;
+        }
+
+        #app-title {
+            font-size: 70px;
             display: block;
             margin: auto;
             width: 100%;
@@ -494,12 +489,39 @@
             display: none;
         }
 
-        @media screen and (max-width: 430px) {
-            .file-drop-area {
-                width: 80%;
+        @media screen and (max-width: 1300px) {
+            .progress-container {
+                width: 90%;
             }
 
+            #app-title {
+                font-size: 60px;
+            }
+        }
+
+        @media screen and (max-width: 430px) {
+
             .progress-container {
+                width: 90%;
+            }
+
+            #app-title {
+                font-size: 40px;
+            }
+
+            .controls-container {
+                flex-wrap: wrap;
+            }
+
+            .file-drop-area {
+                height: 100px;
+            }
+
+            .file-drop-area p {
+                font-size: 22px;
+            }
+
+            form {
                 width: 90%;
             }
         }
@@ -514,7 +536,6 @@
             padding: 10px;
             border-radius: 10px;
             box-shadow: var(--shadow);
-            z-index: 1000;
             text-align: left;
         }
 
@@ -527,16 +548,11 @@
             top: 10px;
             left: 10px;
             background-color: #D93B2C;
-            /* Error background color (color-2) */
             color: var(--color-4);
-            /* Error text color (color-4) */
             padding: 15px 20px;
             border-radius: 10px;
             box-shadow: var(--shadow);
-            z-index: 1001;
-            /* Higher z-index than progress notification */
             display: none;
-            /* Initially hidden */
             width: 300px;
             text-align: left;
         }
@@ -551,15 +567,15 @@
 
 <body>
     <div class="container">
-        <h1 class="app-title">
-            <p class="glowing-text" style="font-size: 70px">GFPGAN</p>
-            <p class="glowing-text">Image Enhancer</p>
+        <h1 class="app-title-container">
+            <p class="glowing-text" id="app-title">GFPGAN</p>
+            <p class="glowing-text" id="app-title">Image Enhancer</p>
         </h1>
         <h2 id="uploaded-count"></h2>
 
         <div class="gpu-info">
-            GPU Detected: <span id="gpu-name">Loading...</span><br>
-            Half Precision: <span id="half-precision">Loading...</span><br>
+            GPU Detected: <span id="gpu-name">N/A</span><br>
+            Half Precision: <span id="half-precision">N/A</span><br>
             App Version: <span id="app-version">V2.0</span>
         </div>
 
@@ -592,7 +608,7 @@
             </div>
 
             <div class="progress-notification" id="progress-notification">
-                <p><span id="downloading-model-name">Downloading Model Files</span>...</p>
+                <p><span id="downloading-model-name">Downloading Model Files</span></p><br>
                 <div class="progress-bar">
                     <div class="progress-fill" id="download-progress-fill"></div>
                 </div>
@@ -638,7 +654,6 @@
         <p id="error-message-detail"></p>
     </div>
 
-
     <script>
         const fileDropArea = document.getElementById('file-drop-area');
         const fileInput = document.getElementById('file-input');
@@ -651,16 +666,16 @@
         const themeMenu = document.getElementById('theme-menu');
         const gpuNameElement = document.getElementById('gpu-name');
         const halfPrecisionElement = document.getElementById('half-precision');
+        const uploadedCountElement = document.getElementById('uploaded-count');
 
-        const progressNotification = document.getElementById('progress-notification'); // Get notification element
-        const downloadProgressPercentage = document.getElementById('download-progress-percentage'); // Corrected ID
-        const downloadProgressFill = document.getElementById('download-progress-fill'); // Corrected ID
+        const progressNotification = document.getElementById('progress-notification');
+        const downloadProgressPercentage = document.getElementById('download-progress-percentage');
+        const downloadProgressFill = document.getElementById('download-progress-fill');
         const downloadSpeedDisplay = document.getElementById('download-speed');
-        const errorNotification = document.getElementById('error-notification'); // Error notification
+        const errorNotification = document.getElementById('error-notification');
         const errorMessageHeader = document.getElementById('error-message-header');
         const errorMessageDetail = document.getElementById('error-message-detail');
-        const downloadingModelNameElement = document.getElementById('downloading-model-name'); // Added model name element
-
+        const downloadingModelNameElement = document.getElementById('downloading-model-name');
 
         fileDropArea.addEventListener('click', () => fileInput.click());
 
@@ -678,7 +693,7 @@
             fileDropArea.style.borderColor = 'white';
             const files = e.dataTransfer.files;
             fileInput.files = files;
-            toggleUploadButton(files.length);
+            updateUploadedCount(files.length);
 
             imagePreviewsDiv.innerHTML = '';
             Array.from(files).forEach(file => {
@@ -700,14 +715,12 @@
                 imagePreviewsDiv.appendChild(previewContainer);
             });
 
-            document.getElementById('uploaded-count').style.display = 'block';
-            document.getElementById('uploaded-count').innerText = files.length + ' Image(s) Added';
+            uploadedCountElement.style.display = 'block';
         });
 
         fileInput.addEventListener('change', () => {
             const files = Array.from(fileInput.files);
-            const uploadedCount = files.length;
-            document.getElementById('uploaded-count').innerText = uploadedCount + ' Image(s) Added';
+            updateUploadedCount(files.length);
 
             imagePreviewsDiv.innerHTML = '';
             files.forEach(file => {
@@ -728,8 +741,12 @@
                 previewContainer.appendChild(removeButton);
                 imagePreviewsDiv.appendChild(previewContainer);
             });
-            toggleUploadButton(uploadedCount);
+            toggleUploadButton(files.length);
         });
+
+        function updateUploadedCount(count) {
+            uploadedCountElement.textContent = count + ' Image(s) Added';
+        }
 
         function toggleUploadButton(count) {
             uploadButton.disabled = count === 0;
@@ -749,12 +766,12 @@
                 body: formData
             })
                 .then(response => {
-                    if (!response.ok) { // Check for error HTTP status
-                        return response.json().then(errData => { // Parse error JSON
-                            throw new Error(`${response.status} ${response.statusText}: ${errData.message}`); // Create error with message
+                    if (!response.ok) {
+                        return response.json().then(errData => {
+                            throw new Error(`${response.status} ${response.statusText}: ${errData.message}`);
                         });
                     }
-                    return response.json(); // Proceed with parsing JSON for success
+                    return response.json();
                 })
                 .then(data => {
                     if (data.status === 'success') {
@@ -764,8 +781,8 @@
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    progressContainer.style.display = 'none'; // Hide progress bar on error
-                    showErrorNotification("Image Enhancement Failed", error.message || "An unexpected error occurred during image enhancement."); // Show error notification
+                    progressContainer.style.display = 'none';
+                    showErrorNotification("Image Enhancement Failed", error.message || "An unexpected error occurred during image enhancement.");
                 });
         });
 
@@ -847,6 +864,10 @@
                         const uploadedImageElement = document.getElementById(`uploaded-${filename}`);
                         if (uploadedImageElement) {
                             uploadedImageElement.remove();
+                            const remainingFiles = Array.from(fileInput.files).filter(file => file.name !== filename);
+                            fileInput.files = new DataTransfer().files;
+                            remainingFiles.forEach(file => fileInput.files.add(file));
+                            updateUploadedCount(fileInput.files.length);
                         }
                     }
                 });
@@ -861,6 +882,7 @@
         }
 
         function applyTheme(theme) {
+            localStorage.setItem('selectedTheme', theme);
             if (theme === 'gfpgan') {
                 document.documentElement.style.setProperty('--color-1', '#FE8863');
                 document.documentElement.style.setProperty('--color-2', '#D93B2C');
@@ -885,52 +907,68 @@
             themeMenu.style.display = 'none';
         }
 
+        function loadTheme() {
+            const selectedTheme = localStorage.getItem('selectedTheme');
+            if (selectedTheme) {
+                applyTheme(selectedTheme);
+            }
+        }
+
         function showErrorNotification(header, message) {
             errorMessageHeader.textContent = header;
             errorMessageDetail.textContent = message;
-            errorNotification.style.display = 'block'; // Show error notification
+            errorNotification.style.display = 'block';
             setTimeout(() => {
-                errorNotification.style.display = 'none'; // Hide after a delay (e.g., 5 seconds)
-            }, 5000); // Adjust timeout as needed
+                errorNotification.style.display = 'none';
+            }, 5000);
         }
 
+        let eventSource;
 
-        // Initialize model download status via SSE
-        const eventSource = new EventSource('/initialize_models');
+        function startEventSource() {
+            eventSource = new EventSource('/initialize_models');
 
-        eventSource.onmessage = function (event) {
-            const data = JSON.parse(event.data);
-            if (data.status === 'downloading') {
-                progressNotification.style.display = 'block';
-                downloadProgressPercentage.textContent = data.percentage + '%';
-                downloadProgressFill.style.width = data.percentage + '%';
-                downloadSpeedDisplay.textContent = data.speed;
-                downloadingModelNameElement.textContent = `Downloading Model: ${data.model_name}`; // Display model name
+            eventSource.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                if (data.status === 'downloading') {
+                    progressNotification.style.display = 'block';
+                    downloadProgressPercentage.textContent = data.percentage + '%';
+                    downloadProgressFill.style.width = data.percentage + '%';
+                    downloadSpeedDisplay.textContent = data.speed;
+                    downloadingModelNameElement.textContent = `Downloading Model: ${data.model_name}`;
+                } else if (data.status === 'completed' || data.status === 'ready') {
+                    progressNotification.style.display = 'none';
+                    downloadingModelNameElement.textContent = `Downloading Model Files`;
+                    eventSource.close();
+                } else if (data.status === 'info') {
+                    gpuNameElement.textContent = data.gpu_detected;
+                    halfPrecisionElement.textContent = data.half_precision;
+                } else if (data.status === 'model_init_error') {
+                    progressNotification.style.display = 'none';
+                    downloadingModelNameElement.textContent = `Downloading Model Files`;
+                    showErrorNotification("Model Initialization Error", `Failed to initialize model. Error: ${data.error_message}`);
+                    eventSource.close();
+                } else if (data === 'close') {
+                    eventSource.close();
+                }
+            };
 
-            } else if (data.status === 'completed') {
-                progressNotification.style.display = 'none';
-                downloadingModelNameElement.textContent = `Downloading Model Files`; // Reset model name text
-            } else if (data.status === 'info') {
-                gpuNameElement.textContent = data.gpu_detected;
-                halfPrecisionElement.textContent = data.half_precision;
-            } else if (data.status === 'ready') {
-                progressNotification.style.display = 'none';
-                downloadingModelNameElement.textContent = `Downloading Model Files`; // Reset model name text
-            } else if (data.status === 'model_init_error') { // Handle model init error
-                progressNotification.style.display = 'none'; // Hide progress notification
-                downloadingModelNameElement.textContent = `Downloading Model Files`; // Reset model name text
-                showErrorNotification("Model Initialization Error", `Failed to download ${data.model_name}. Error: ${data.error_message}`); // Show error notification
-            }
-        };
+            eventSource.onerror = function (event) {
+                if (eventSource.readyState === EventSource.CLOSED) {
+                    showErrorNotification("Model Download Issue", "Failed to establish connection for model download updates. Attempting to reconnect...");
+                    setTimeout(startEventSource, 3000);
+                }
+            };
+        }
 
-        eventSource.onerror = function (event) { // Handle SSE errors
-            eventSource.close();
-            showErrorNotification("Model Download Issue", "Failed to establish connection for model download updates. Please reload the page.");
-            console.error("SSE error:", event);
-        };
+        // Load the saved theme when the page is loaded
+        loadTheme();
 
+        // Start the EventSource connection
+        startEventSource();
 
     </script>
+
 </body>
 
 </html>
