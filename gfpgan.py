@@ -280,7 +280,7 @@ def initialize_models():
             scale=2,
             model_path=REALESRGAN_MODEL_PATH,
             model=bg_model,
-            tile=0,
+            tile=400,
             tile_pad=10,
             pre_pad=0,
             half=half_precision,
