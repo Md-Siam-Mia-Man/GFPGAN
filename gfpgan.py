@@ -278,14 +278,15 @@ def initialize_models():
         gpu_name = torch.cuda.get_device_name(0) if half_precision else "CPU"
 
         bg_upsampler = RealESRGANer(
-            scale=2,
+            scale=4,
             model_path=REALESRGAN_MODEL_PATH,
             model=bg_model,
             tile=400,
-            tile_pad=10,
+            tile_pad=10,  # Increase padding
             pre_pad=0,
             half=half_precision,
         )
+
         gfpganer.bg_upsampler = bg_upsampler
         model_initialized = True
 
