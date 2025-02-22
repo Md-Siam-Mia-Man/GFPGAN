@@ -20,20 +20,127 @@ const errorMessageHeader = document.getElementById('error-message-header');
 const errorMessageDetail = document.getElementById('error-message-detail');
 const downloadingModelNameElement = document.getElementById('downloading-model-name');
 
+let eventSource;
+
+// Function to start the EventSource connection
+function startEventSource() {
+    if (!eventSource || eventSource.readyState === EventSource.CLOSED) {
+        eventSource = new EventSource('/initialize_models');
+
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            if (data.status === 'downloading') {
+                progressNotification.style.display = 'block';
+                downloadProgressPercentage.textContent = data.percentage + '%';
+                downloadProgressFill.style.width = data.percentage + '%';
+                downloadSpeedDisplay.textContent = data.speed;
+                downloadingModelNameElement.textContent = `Downloading Model: ${data.model_name}`;
+            } else if (data.status === 'completed' || data.status === 'ready') {
+                progressNotification.style.display = 'none';
+                downloadingModelNameElement.textContent = `Downloading Model Files`;
+            } else if (data.status === 'info') {
+                gpuNameElement.textContent = data.gpu_detected;
+                halfPrecisionElement.textContent = data.half_precision;
+            } else if (data.status === 'model_init_error') {
+                progressNotification.style.display = 'none';
+                downloadingModelNameElement.textContent = `Downloading Model Files`;
+                showErrorNotification("Model Initialization Error", `Error: ${data.error_message}`);
+            }
+        };
+
+        eventSource.onerror = function (event) {
+            console.error("EventSource failed:", event);
+            if (eventSource.readyState === EventSource.CLOSED) {
+                showErrorNotification("Model Download Failed", "Attempting to Reconnect");
+                // Retry connection after a delay
+                setTimeout(startEventSource, 3000);
+            }
+        };
+
+        eventSource.onopen = function (event) {
+            console.log("EventSource opened:", event);
+        };
+    }
+}
+
+// Load the saved theme when the page is loaded
+function loadTheme() {
+    const selectedTheme = localStorage.getItem('selectedTheme');
+    if (selectedTheme) {
+        applyTheme(selectedTheme);
+    }
+}
+
+// Apply a theme based on the selected theme
+function applyTheme(theme) {
+    localStorage.setItem('selectedTheme', theme);
+    if (theme === 'gfpgan') {
+        document.documentElement.style.setProperty('--color-1', '#FE8863');
+        document.documentElement.style.setProperty('--color-2', '#D93B2C');
+        document.documentElement.style.setProperty('--color-3', '#F3CDBF');
+        document.documentElement.style.setProperty('--color-4', '#E7C9C0');
+    } else if (theme === 'black') {
+        document.documentElement.style.setProperty('--color-1', '#444');
+        document.documentElement.style.setProperty('--color-2', '#eee');
+        document.documentElement.style.setProperty('--color-3', '#222');
+        document.documentElement.style.setProperty('--color-4', '#111');
+    } else if (theme === 'light') {
+        document.documentElement.style.setProperty('--color-1', '#bbb');
+        document.documentElement.style.setProperty('--color-2', '#333');
+        document.documentElement.style.setProperty('--color-3', '#ddd');
+        document.documentElement.style.setProperty('--color-4', '#fff');
+    } else if (theme === 'crimson') {
+        document.documentElement.style.setProperty('--color-1', '#ff0056');
+        document.documentElement.style.setProperty('--color-2', '#ff0056');
+        document.documentElement.style.setProperty('--color-3', '#FFFFFF');
+        document.documentElement.style.setProperty('--color-4', '#FFFFFF');
+    }
+    themeMenu.style.display = 'none';
+}
+
+// Show error notifications
+function showErrorNotification(header, message) {
+    errorMessageHeader.textContent = header;
+    errorMessageDetail.textContent = message;
+    errorNotification.style.display = 'block';
+    setTimeout(() => {
+        errorNotification.style.display = 'none';
+    }, 5000);
+}
+
+// Toggle the theme menu visibility
+function toggleThemeMenu() {
+    themeMenu.style.display = themeMenu.style.display === 'block' ? 'none' : 'block';
+}
+
+// Update the uploaded count display
+function updateUploadedCount(count) {
+    uploadedCountElement.textContent = count + ' Image(s) Added';
+}
+
+// Toggle the upload button based on the number of files
+function toggleUploadButton(count) {
+    uploadButton.disabled = count === 0;
+}
+
+// Handle file drop area click to open file input
 fileDropArea.addEventListener('click', () => fileInput.click());
 
+// Handle dragover event to change border color
 fileDropArea.addEventListener('dragover', (e) => {
     e.preventDefault();
-    fileDropArea.style.borderColor = 'white';
+    fileDropArea.style.borderColor = 'var(--color-2)';
 });
 
+// Handle dragleave event to reset border color
 fileDropArea.addEventListener('dragleave', () => {
-    fileDropArea.style.borderColor = 'white';
+    fileDropArea.style.borderColor = 'var(--color-1)';
 });
 
+// Handle drop event to process dropped files
 fileDropArea.addEventListener('drop', (e) => {
     e.preventDefault();
-    fileDropArea.style.borderColor = 'white';
+    fileDropArea.style.borderColor = 'var(--color-1)';
     const files = e.dataTransfer.files;
     fileInput.files = files;
     updateUploadedCount(files.length);
@@ -59,8 +166,10 @@ fileDropArea.addEventListener('drop', (e) => {
     });
 
     uploadedCountElement.style.display = 'block';
+    toggleUploadButton(files.length);
 });
 
+// Handle file input change event
 fileInput.addEventListener('change', () => {
     const files = Array.from(fileInput.files);
     updateUploadedCount(files.length);
@@ -87,14 +196,7 @@ fileInput.addEventListener('change', () => {
     toggleUploadButton(files.length);
 });
 
-function updateUploadedCount(count) {
-    uploadedCountElement.textContent = count + ' Image(s) Added';
-}
-
-function toggleUploadButton(count) {
-    uploadButton.disabled = count === 0;
-}
-
+// Handle form submission
 document.getElementById('upload-form').addEventListener('submit', function (e) {
     e.preventDefault();
     progressContainer.style.display = 'block';
@@ -129,6 +231,7 @@ document.getElementById('upload-form').addEventListener('submit', function (e) {
         });
 });
 
+// Update the enhanced images display
 function updateEnhancedImages(images) {
     restoredPreviewsDiv.innerHTML = '';
     images.forEach(image => {
@@ -151,6 +254,7 @@ function updateEnhancedImages(images) {
     downloadAllButton.disabled = images.length === 0;
 }
 
+// Download a single image
 function downloadImage(filename) {
     fetch(`/output/${filename}`, {
         method: 'GET',
@@ -167,6 +271,7 @@ function downloadImage(filename) {
     });
 }
 
+// Download all enhanced images as a zip file
 function downloadAll() {
     fetch('/download_all', {
         method: 'POST',
@@ -183,6 +288,7 @@ function downloadAll() {
     });
 }
 
+// Clear the history of uploaded and enhanced images
 function clearHistory() {
     fetch('/clear_history', {
         method: 'POST',
@@ -193,6 +299,7 @@ function clearHistory() {
     });
 }
 
+// Remove a specific image from the uploaded list
 function removeImage(filename) {
     fetch('/remove', {
         method: 'POST',
@@ -216,93 +323,11 @@ function removeImage(filename) {
         });
 }
 
+// Reload the UI
 function reloadUI() {
     window.location.reload();
 }
 
-function toggleThemeMenu() {
-    themeMenu.style.display = themeMenu.style.display === 'block' ? 'none' : 'block';
-}
-
-function applyTheme(theme) {
-    localStorage.setItem('selectedTheme', theme);
-    if (theme === 'gfpgan') {
-        document.documentElement.style.setProperty('--color-1', '#FE8863');
-        document.documentElement.style.setProperty('--color-2', '#D93B2C');
-        document.documentElement.style.setProperty('--color-3', '#F3CDBF');
-        document.documentElement.style.setProperty('--color-4', '#E7C9C0');
-    } else if (theme === 'black') {
-        document.documentElement.style.setProperty('--color-1', '#444');
-        document.documentElement.style.setProperty('--color-2', '#eee');
-        document.documentElement.style.setProperty('--color-3', '#222');
-        document.documentElement.style.setProperty('--color-4', '#111');
-    } else if (theme === 'light') {
-        document.documentElement.style.setProperty('--color-1', '#bbb');
-        document.documentElement.style.setProperty('--color-2', '#333');
-        document.documentElement.style.setProperty('--color-3', '#ddd');
-        document.documentElement.style.setProperty('--color-4', '#fff');
-    } else if (theme === 'crimson') {
-        document.documentElement.style.setProperty('--color-1', '#ff0056'); // White stays
-        document.documentElement.style.setProperty('--color-2', '#ff0056'); // Light pink for a softer touch
-        document.documentElement.style.setProperty('--color-3', '#FFFFFF'); // Dark grey for text or borders (accessibility)
-        document.documentElement.style.setProperty('--color-4', '#FFFFFF'); // A more vibrant red
-
-    }
-    themeMenu.style.display = 'none';
-}
-
-function loadTheme() {
-    const selectedTheme = localStorage.getItem('selectedTheme');
-    if (selectedTheme) {
-        applyTheme(selectedTheme);
-    }
-}
-
-function showErrorNotification(header, message) {
-    errorMessageHeader.textContent = header;
-    errorMessageDetail.textContent = message;
-    errorNotification.style.display = 'block';
-    setTimeout(() => {
-        errorNotification.style.display = 'none';
-    }, 5000);
-}
-
-let eventSource;
-
-function startEventSource() {
-    eventSource = new EventSource('/initialize_models');
-
-    eventSource.onmessage = function (event) {
-        const data = JSON.parse(event.data);
-        if (data.status === 'downloading') {
-            progressNotification.style.display = 'block';
-            downloadProgressPercentage.textContent = data.percentage + '%';
-            downloadProgressFill.style.width = data.percentage + '%';
-            downloadSpeedDisplay.textContent = data.speed;
-            downloadingModelNameElement.textContent = `Downloading Model: ${data.model_name}`;
-        } else if (data.status === 'completed' || data.status === 'ready') {
-            progressNotification.style.display = 'none';
-            downloadingModelNameElement.textContent = `Downloading Model Files`;
-        } else if (data.status === 'info') {
-            gpuNameElement.textContent = data.gpu_detected;
-            halfPrecisionElement.textContent = data.half_precision;
-        } else if (data.status === 'model_init_error') {
-            progressNotification.style.display = 'none';
-            downloadingModelNameElement.textContent = `Downloading Model Files`;
-            showErrorNotification("Model Initialization Error", `Error: ${data.error_message}`);
-        }
-    };
-
-    eventSource.onerror = function (event) {
-        if (eventSource.readyState === EventSource.CLOSED) {
-            showErrorNotification("Model Download Failed", "Attempting to Reconnect");
-            setTimeout(startEventSource, 3000);
-        }
-    };
-}
-
-// Load the saved theme when the page is loaded
+// Load the saved theme and start the EventSource connection when the page loads
 loadTheme();
-
-// Start the EventSource connection
 startEventSource();

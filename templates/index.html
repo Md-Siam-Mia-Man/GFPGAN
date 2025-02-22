@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Icons" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="http://127.0.0.1:3005/static/favicon.ico">
+    <link rel="stylesheet" href="http://127.0.0.1:3005/static/css/index.css">
+    <title>GFPGAN Image Enhancement</title>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="app-title-container">
+            <p class="glowing-text letter-spacing" id="app-title">GFPGAN</p>
+            <p class="glowing-text letter-spacing" id="app-title">Image Enhancer</p>
+        </h1>
+        <h2 id="uploaded-count"></h2>
+
+        <div class="gpu-info">
+            GPU Detected: <span id="gpu-name">N/A</span><br>
+            Half Precision: <span id="half-precision">N/A</span><br>
+            App Version: <span id="app-version">V2.0</span>
+        </div>
+
+        <form id="upload-form" method="POST" enctype="multipart/form-data">
+            <div class="file-drop-area" id="file-drop-area">
+                <p class="glowing-text letter-spacing">Drop It Like It's Hot</p>
+            </div>
+            <div class="controls-container">
+                <div class="button-group">
+                    <button type="button" class="icon-button" onclick="toggleThemeMenu()">
+                        <span class="material-symbols-outlined">display_settings</span>
+                    </button>
+                    <button type="button" class="icon-button" onclick="reloadUI()">
+                        <span class="material-symbols-outlined">frame_reload</span>
+                    </button>
+                </div>
+
+                <input type="file" id="file-input" name="files[]" multiple accept="image/*">
+                <button type="submit" class="disabled-button upload-button" disabled>Enhance</button>
+
+                <div class="button-group">
+                    <button type="button" class="icon-button" onclick="clearHistory()">
+                        <span class="material-symbols-outlined">delete_forever</span>
+                    </button>
+                    <button type="button" class="icon-button gradient-text" onclick="downloadAll()"
+                        id="download-all-button" disabled>
+                        <span class="material-symbols-outlined">download</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="progress-notification" id="progress-notification">
+                <p><span id="downloading-model-name">Downloading Model Files</span></p><br>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="download-progress-fill"></div>
+                </div>
+                <p><span class="progress-percentage" id="download-progress-percentage">0%</span> <span
+                        class="download-speed" id="download-speed"></span></p>
+            </div>
+
+        </form>
+
+        <div class="progress-container" id="progress-container">
+            <div class="progress-bar" id="progress-bar">
+                <div class="progress-fill">
+                    <p class="glowing-text">Enhancing Images</p>
+                </div>
+            </div>
+        </div>
+        <div class="main-image-container">
+            <div class="image-container">
+                <div class="title">
+                    <p class="text glowing-text letter-spacing">Enhanced Images</p>
+                </div>
+                <div class="restored-images" id="restored-images"></div>
+            </div>
+
+            <div class="image-container">
+                <div class="title">
+                    <p class="text glowing-text letter-spacing">Uploaded Images</p>
+                </div>
+                <div class="uploaded-images" id="uploaded-images"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="theme-menu">
+        <button class="theme-select-button" onclick="applyTheme('gfpgan')">GFPGAN</button>
+        <button class="theme-select-button" onclick="applyTheme('black')">Black</button>
+        <button class="theme-select-button" onclick="applyTheme('light')">Light</button>
+        <button class="theme-select-button" onclick="applyTheme('crimson')">Crimson</button>
+    </div>
+
+    <div class="error-notification" id="error-notification">
+        <p id="error-message-header">Error</p>
+        <p id="error-message-detail"></p>
+    </div>
+
+    <script src="http://127.0.0.1:3005/static/js/index.js"></script>
+</body>
+
+</html>

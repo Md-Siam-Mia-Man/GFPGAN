@@ -1,10 +1,14 @@
 import os
 import secrets
 import requests
+import cv2
 import json
 import subprocess
 import time
 import torch
+import zipfile
+import threading
+import logging
 from flask import (
     Flask,
     request,
@@ -15,14 +19,10 @@ from flask import (
     jsonify,
 )
 from werkzeug.utils import secure_filename
-import cv2
 from basicsr.utils import imwrite
 from gfpgan import GFPGANer
 from realesrgan import RealESRGANer
 from basicsr.archs.rrdbnet_arch import RRDBNet
-import zipfile
-import threading
-import logging
 from requests.adapters import Retry, HTTPAdapter
 from requests.exceptions import RequestException
 
@@ -52,10 +52,29 @@ model_initialized = False
 version_file = "gfpgan/version.py"
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+# Configure logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
+
+# Suppress logs from external libraries except for startup logs
+class StartupFilter(logging.Filter):
+    def filter(self, record):
+        # Allow logs that contain startup information
+        if "Running on" in record.getMessage() or "Serving Flask app" in record.getMessage():
+            return True
+        # Suppress other werkzeug logs
+        return False
+
+# Apply the filter to the werkzeug logger
+werkzeug_logger = logging.getLogger("werkzeug")
+werkzeug_logger.setLevel(logging.INFO)
+werkzeug_logger.addFilter(StartupFilter())
+
+# Suppress other external libraries
+logging.getLogger("requests").setLevel(logging.ERROR)
+logging.getLogger("urllib3").setLevel(logging.ERROR)
+logging.getLogger("torch").setLevel(logging.ERROR)
+logging.getLogger("PIL").setLevel(logging.ERROR)
 
 
 def readme():
@@ -341,7 +360,7 @@ def index():
 
         return jsonify({"status": "success", "images": processed_images})
 
-    return send_from_directory("static", "index.html")
+    return send_from_directory("templates", "index.html")
 
 
 @app.route("/initialize_models", methods=["GET"])
@@ -417,5 +436,5 @@ def remove_file():
 
 
 if __name__ == "__main__":
-    write_version_py()
-    app.run(host="0.0.0.0", port=3005, debug=False)
+    port = 3005
+    app.run(host="0.0.0.0", port=port, debug=False)
