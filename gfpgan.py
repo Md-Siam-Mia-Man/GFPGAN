@@ -140,6 +140,7 @@ def download_model(url, destination, model_name):
         total=5,
         status_forcelist=[429, 500, 502, 503, 504],
         allowed_methods=["HEAD", "GET", "OPTIONS"],
+        backoff_factor=1,  # Exponential backoff
     )
     adapter = HTTPAdapter(max_retries=retry_strategy)
     session.mount("https://", adapter)
@@ -348,8 +349,6 @@ def initialize_models_route():
         try:
             for update in initialize_models():
                 yield f"data: {json.dumps(update)}\n\n"
-        except GeneratorExit:
-            logger.warning("Client disconnected during model initialization.")
         except Exception as e:
             logger.error(f"Error during model initialization: {e}")
             yield f"data: {json.dumps({'status': 'model_init_error', 'error_message': str(e)})}\n\n"

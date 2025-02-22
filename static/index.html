@@ -25,7 +25,7 @@
             --color-3: #F3CDBF;
             --color-4: #E7C9C0;
             --shadow: 0 5px 10px #00000033;
-            --transition: 0.3s ease-in-out;
+            --transition: 300ms ease-in-out;
         }
 
         body {
@@ -59,6 +59,13 @@
         ::-webkit-scrollbar-thumb {
             background: var(--color-1);
             border-radius: 10px;
+        }
+
+        .letter-spacing:hover,
+        .letter-spacing:active,
+        .letter-spacing:focus {
+            transition: var(--transition);
+            letter-spacing: 2px;
         }
 
         #theme-menu {
@@ -340,7 +347,7 @@
             margin: 5px 0;
             background-color: transparent;
             color: var(--color-2);
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             letter-spacing: 0.5px;
         }
@@ -360,7 +367,7 @@
             width: 0%;
             background-color: var(--color-2);
             border-radius: 5px;
-            transition: width 0.3s ease;
+            transition: var(--transition);
         }
 
         .progress-percentage,
@@ -547,8 +554,8 @@
             position: fixed;
             top: 10px;
             left: 10px;
-            background-color: #D93B2C;
-            color: var(--color-4);
+            background: red;
+            color: white;
             padding: 15px 20px;
             border-radius: 10px;
             box-shadow: var(--shadow);
@@ -560,7 +567,7 @@
         .error-notification p {
             margin: 5px 0;
             background-color: transparent;
-            color: var(--color-4);
+            color: white;
         }
     </style>
 </head>
@@ -568,8 +575,8 @@
 <body>
     <div class="container">
         <h1 class="app-title-container">
-            <p class="glowing-text" id="app-title">GFPGAN</p>
-            <p class="glowing-text" id="app-title">Image Enhancer</p>
+            <p class="glowing-text letter-spacing" id="app-title">GFPGAN</p>
+            <p class="glowing-text letter-spacing" id="app-title">Image Enhancer</p>
         </h1>
         <h2 id="uploaded-count"></h2>
 
@@ -581,7 +588,7 @@
 
         <form id="upload-form" method="POST" enctype="multipart/form-data">
             <div class="file-drop-area" id="file-drop-area">
-                <p class="glowing-text">Drop It Like It's Hot</p>
+                <p class="glowing-text letter-spacing">Drop It Like It's Hot</p>
             </div>
             <div class="controls-container">
                 <div class="button-group">
@@ -621,21 +628,21 @@
         <div class="progress-container" id="progress-container">
             <div class="progress-bar" id="progress-bar">
                 <div class="progress-fill">
-                    <p class="glowing-text">Enhancing Images...</p>
+                    <p class="glowing-text">Enhancing Images</p>
                 </div>
             </div>
         </div>
         <div class="main-image-container">
             <div class="image-container">
                 <div class="title">
-                    <p class="text glowing-text">Enhanced Images</p>
+                    <p class="text glowing-text letter-spacing">Enhanced Images</p>
                 </div>
                 <div class="restored-images" id="restored-images"></div>
             </div>
 
             <div class="image-container">
                 <div class="title">
-                    <p class="text glowing-text">Uploaded Images</p>
+                    <p class="text glowing-text letter-spacing">Uploaded Images</p>
                 </div>
                 <div class="uploaded-images" id="uploaded-images"></div>
             </div>
@@ -646,7 +653,7 @@
         <button class="theme-select-button" onclick="applyTheme('gfpgan')">GFPGAN</button>
         <button class="theme-select-button" onclick="applyTheme('black')">Black</button>
         <button class="theme-select-button" onclick="applyTheme('light')">Light</button>
-        <button class="theme-select-button" onclick="applyTheme('pink')">Pink</button>
+        <button class="theme-select-button" onclick="applyTheme('crimson')">Crimson</button>
     </div>
 
     <div class="error-notification" id="error-notification">
@@ -782,7 +789,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                     progressContainer.style.display = 'none';
-                    showErrorNotification("Image Enhancement Failed", error.message || "An unexpected error occurred during image enhancement.");
+                    showErrorNotification("Image Enhancement Failed", error.message || "An unexpected error occurred");
                 });
         });
 
@@ -898,11 +905,12 @@
                 document.documentElement.style.setProperty('--color-2', '#333');
                 document.documentElement.style.setProperty('--color-3', '#ddd');
                 document.documentElement.style.setProperty('--color-4', '#fff');
-            } else if (theme === 'pink') {
-                document.documentElement.style.setProperty('--color-1', '#F48FB1');
-                document.documentElement.style.setProperty('--color-2', '#E91E63');
-                document.documentElement.style.setProperty('--color-3', '#FCE4EC');
-                document.documentElement.style.setProperty('--color-4', '#F8BBD0');
+            } else if (theme === 'crimson') {
+                document.documentElement.style.setProperty('--color-1', '#ff0056'); // White stays
+                document.documentElement.style.setProperty('--color-2', '#ff0056'); // Light pink for a softer touch
+                document.documentElement.style.setProperty('--color-3', '#FFFFFF'); // Dark grey for text or borders (accessibility)
+                document.documentElement.style.setProperty('--color-4', '#FFFFFF'); // A more vibrant red
+
             }
             themeMenu.style.display = 'none';
         }
@@ -939,23 +947,19 @@
                 } else if (data.status === 'completed' || data.status === 'ready') {
                     progressNotification.style.display = 'none';
                     downloadingModelNameElement.textContent = `Downloading Model Files`;
-                    eventSource.close();
                 } else if (data.status === 'info') {
                     gpuNameElement.textContent = data.gpu_detected;
                     halfPrecisionElement.textContent = data.half_precision;
                 } else if (data.status === 'model_init_error') {
                     progressNotification.style.display = 'none';
                     downloadingModelNameElement.textContent = `Downloading Model Files`;
-                    showErrorNotification("Model Initialization Error", `Failed to initialize model. Error: ${data.error_message}`);
-                    eventSource.close();
-                } else if (data === 'close') {
-                    eventSource.close();
+                    showErrorNotification("Model Initialization Error", `Error: ${data.error_message}`);
                 }
             };
 
             eventSource.onerror = function (event) {
                 if (eventSource.readyState === EventSource.CLOSED) {
-                    showErrorNotification("Model Download Issue", "Failed to establish connection for model download updates. Attempting to reconnect...");
+                    showErrorNotification("Model Download Failed", "Attempting to Reconnect");
                     setTimeout(startEventSource, 3000);
                 }
             };
@@ -966,7 +970,6 @@
 
         // Start the EventSource connection
         startEventSource();
-
     </script>
 
 </body>
