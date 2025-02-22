@@ -259,7 +259,7 @@ def initialize_models():
 
         gfpganer = GFPGANer(
             model_path=GFPGAN_MODEL_PATH,
-            upscale=2,
+            upscale=4,
             arch="clean",
             channel_multiplier=2,
             bg_upsampler=None,
