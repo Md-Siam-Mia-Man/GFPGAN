@@ -113,11 +113,6 @@ function toggleThemeMenu() {
     themeMenu.style.display = themeMenu.style.display === 'block' ? 'none' : 'block';
 }
 
-// Update the uploaded count display
-function updateUploadedCount(count) {
-    uploadedCountElement.textContent = count + ' Image(s) Added';
-}
-
 // Toggle the upload button based on the number of files
 function toggleUploadButton(count) {
     uploadButton.disabled = count === 0;

@@ -20,14 +20,19 @@
         <h2 id="uploaded-count"></h2>
 
         <div class="gpu-info">
+            <div class="user">
+                <span class="material-symbols-outlined">
+                    account_circle
+                    </span>
+            </div>
             GPU Detected: <span id="gpu-name">N/A</span><br>
             Half Precision: <span id="half-precision">N/A</span><br>
             App Version: <span id="app-version">V2.0</span>
         </div>
 
         <form id="upload-form" method="POST" enctype="multipart/form-data">
-            <div class="file-drop-area" id="file-drop-area">
-                <p class="glowing-text letter-spacing">Drop It Like It's Hot</p>
+            <div class="file-drop-area letter-spacing" id="file-drop-area">
+                <p class="glowing-text">Drop It Like It's Hot</p>
             </div>
             <div class="controls-container">
                 <div class="button-group">
@@ -89,10 +94,10 @@
     </div>
 
     <div id="theme-menu">
-        <button class="theme-select-button" onclick="applyTheme('gfpgan')">GFPGAN</button>
-        <button class="theme-select-button" onclick="applyTheme('black')">Black</button>
-        <button class="theme-select-button" onclick="applyTheme('light')">Light</button>
-        <button class="theme-select-button" onclick="applyTheme('crimson')">Crimson</button>
+        <button class="theme-select-button" onclick="applyTheme('gfpgan')" style="background: #F3CDBF;"></button>
+        <button class="theme-select-button" onclick="applyTheme('black')" style="background: #222;"></button>
+        <button class="theme-select-button" onclick="applyTheme('light')" style="background: #ddd;"></button>
+        <button class="theme-select-button" onclick="applyTheme('crimson')" style="background: #ff0056;"></button>
     </div>
 
     <div class="error-notification" id="error-notification">

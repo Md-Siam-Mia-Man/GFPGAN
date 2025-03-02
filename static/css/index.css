@@ -15,16 +15,13 @@
     --color-3: #F3CDBF;
     --color-4: #E7C9C0;
     --shadow: 0 5px 10px #00000033;
-    --transition: 300ms ease-in-out;
+    --transition: all 300ms ease-in-out;
 }
 
 body {
     text-align: center;
     width: 100vw;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    height: 100vh;
     overflow-x: hidden;
 }
 
@@ -39,11 +36,12 @@ a {
 }
 
 ::-webkit-scrollbar {
-    width: 8px;
+    width: 5px;
 }
 
 ::-webkit-scrollbar-track {
     background: var(--color-4);
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -51,11 +49,25 @@ a {
     border-radius: 10px;
 }
 
+.letter-spacing {
+    transition: var(--transition);
+}
+
 .letter-spacing:hover,
 .letter-spacing:active,
 .letter-spacing:focus {
-    transition: var(--transition);
     letter-spacing: 2px;
+}
+
+.user {
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: var(--color-3);
+}
+
+.user span:hover {
+    color: var(--color-2);
 }
 
 #theme-menu {
@@ -78,16 +90,16 @@ a {
 
 .theme-select-button {
     padding: 5px 10px;
-    border: 2px solid var(--color-1);
+    border: 2px solid white;
     font-size: 16px;
     cursor: pointer;
     margin: 5px;
     transition: var(--transition);
-    background-color: var(--color-3);
     color: var(--color-2);
-    border-radius: 50px;
+    border-radius: 50%;
     box-shadow: var(--shadow);
-    width: 125px;
+    width: 50px;
+    height: 50px;
 }
 
 .material-symbols-outlined {
