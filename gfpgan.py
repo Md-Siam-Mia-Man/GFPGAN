@@ -360,7 +360,7 @@ def index():
 
         return jsonify({"status": "success", "images": processed_images})
 
-    return send_from_directory("templates", "index.html")
+    return send_from_directory("static", "index.html")
 
 
 @app.route("/initialize_models", methods=["GET"])
