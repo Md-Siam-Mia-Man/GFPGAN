@@ -1,4 +1,4 @@
-<img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/GFPGAN-Banner.png"></img>
+<img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/Banner.png"></img>
 # 🌟 GFPGAN Image Enhancer
 # 💻 WebUI
 <img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/GFPGAN.png"></img>
