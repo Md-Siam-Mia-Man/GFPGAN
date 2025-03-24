@@ -125,14 +125,6 @@ python gfpgan.py
 
 ## 📜 License
 The main source code and models are provided by an open-source project named [GFPGAN](https://github.com/TencentARC/GFPGAN) by [TencentARC](https://github.com/TencentARC/GFPGAN)
-
 ---
-
-### 🎨 Emojis & Style Highlights
-- 🚀 **Features**: Image enhancement, GPU support, half precision.
-- 🛠️ **Installation**: Simple and easy setup.
-- 💻 **Usage**: Seamless web interface.
-- 🤝 **Contributing**: Open for community collaboration.
-- 📜 **License**: Open-source.
 
 # ❤️ *Happy Enhancing!* 💯
