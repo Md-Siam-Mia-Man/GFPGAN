@@ -124,7 +124,7 @@ python gfpgan.py
 ---
 
 ## 📜 License
-The main source code and models are provided by an open-source project named [GFPGAN](https://github.com/TencentARC/GFPGAN) by [TencentARC](https://github.com/TencentARC/GFPGAN)
+- The main source code and models are provided by an open-source project named [GFPGAN](https://github.com/TencentARC/GFPGAN) by [TencentARC](https://github.com/TencentARC/GFPGAN)
 ---
 
 # ❤️ *Happy Enhancing!* 💯
