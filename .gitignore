@@ -1,0 +1,7 @@
+/gfpgan/__pycache__
+/gfpgan/archs/__pycache__
+/gfpgan/data/__pycache__
+/gfpgan/models/__pycache__
+*.pth
+/gfpgan/data
+/gfpgan/data

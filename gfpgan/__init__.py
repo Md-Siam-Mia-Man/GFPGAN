@@ -1,7 +1,6 @@
-# flake8: noqa
-from .archs import *
-from .data import *
-from .models import *
-from .utils import *
+# gfpgan/__init__.py
 
-# from .version import *
+# This file exposes the GFPGANer class from the utils module.
+from .utils import GFPGANer
+
+__all__ = ['GFPGANer']

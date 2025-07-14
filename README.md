@@ -1,130 +1,147 @@
-<img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/Banner.png"></img>
-# 🌟 GFPGAN Image Enhancer
-# 💻 WebUI
-<img src="https://github.com/Md-Siam-Mia-Code/GFPGAN/blob/main/assets/GFPGAN.png"></img>
+<div align="center">
+  <img src="./assets/Banner.png" alt="GFPGAN Banner">
+  <h1>GFPGAN Web UI</h1>
+  <p>A powerful, user-friendly desktop web interface for the GFPGAN and Real-ESRGAN models, designed for easy setup and use.</p>
+</div>
+
+<div align="center">
+  <img src="./assets/GFPGAN.png" alt="Web UI Screenshot">
+</div>
 
 ## 🗂 Table of Contents
-- 📖 [Introduction](#-introduction)
-- ✨ [Features](#-features)
-- 🛠️ [Installation](#️-installation)
-- 💻 [Usage](#-usage)
-- 🤝 [Contributing](#-contributing)
-- 📜 [License](#-license)
+
+- [📖 Introduction](#-introduction)
+- [✨ Features](#-features)
+- [🛠️ Installation](#️-installation)
+- [💻 Usage](#-usage)
+- [🤝 Contributing](#-contributing)
+- [📜 License](#-license)
 
 ---
 
 ## 📖 Introduction
-GFPGAN Image Enhancement is a powerful tool designed to enhance and restore images using advanced deep-learning techniques. This project leverages [**GFPGAN**](https://github.com/TencentARC/GFPGAN) and [**Real-ESRGAN** ](https://github.com/xinntao/Real-ESRGAN) models to improve image quality, making them sharper and more detailed.
+
+This project provides a clean, modern, and easy-to-use web interface for enhancing images using state-of-the-art AI models. It leverages the powerful face restoration capabilities of [**GFPGAN**](https://github.com/TencentARC/GFPGAN) and the versatile background upscaling of [**Real-ESRGAN**](https://github.com/xinntao/Real-ESRGAN) to dramatically improve image quality.
+
+The application is designed for simplicity, featuring an automated setup script for Windows and a lazy-loading architecture that ensures a fast startup and efficient memory usage.
 
 ---
 
 ## ✨ Features
-- 🚀 **Image Enhancement:** Uses **GFPGAN** and **Real-ESRGAN** models for high-quality image restoration.
-- ⚡ **GPU Support:** Automatically utilizes available GPUs for faster processing.
-- 🧪 **Half Precision:** Supports half precision for better performance on compatible GPUs.
-- 🖥️ **Web Interface:** User-friendly web interface for easy image uploading and enhancement.
-- 📢 **Real-Time Notifications:** Displays download progress and real-time GPU detection status.
-- 🕊️ **Simplicity:** Simple installation process and user-friendly.
-- 🖱️ **Drag and Drop Support:** Enjoy the ease of drag and drop functionality for file uploads.
-- 🚋 **Batch Processing:** Upscale multiple images simultaneously and download them as a single ZIP file.
-- 🧱 **Preview Grid:** View previews of both original and processed images side-by-side within the browser.
-- 🏎️ **Download Options:** Download enhanced images individually or as a batch in a ZIP archive for convenience.
-- 💻 **Responsive Design:**  The interface is designed to be responsive and work seamlessly across desktop and mobile browsers.
+
+- 🚀 **Automated 1-Click Setup:** A smart `run.bat` script for Windows automatically finds conda, creates the environment, and installs all dependencies.
+- ⚡ **Lazy Model Loading:** The application starts instantly. Models are only loaded into memory on the first enhancement task, preventing startup crashes on low-RAM systems.
+- 💡 **Performance Control:** A dedicated **"Upscale Background"** checkbox allows users to disable the slower Real-ESRGAN process for much faster face-only restoration on CPU.
+- 🖥️ **Modern Web Interface:** A sleek, responsive interface built with a cyberpunk aesthetic that is easy to navigate.
+- 🖱️ **Drag and Drop:** Effortlessly upload multiple images by dragging them onto the application window.
+- 🖼️ **Batch Processing:** Enhance multiple images at once and download them conveniently as a single ZIP archive.
+- 🔍 **Side-by-Side Previews:** Immediately compare your original and enhanced images directly in the browser.
 
 ---
 
 ## 🛠️ Installation
+
 ### 📋 Prerequisites
-- 🐉 [Anaconda](https://www.anaconda.com/download) or [Miniconda](https://docs.conda.io/projects/conda/en/stable/user-guide/install/index.html)
-- 🐍 [Python](https://www.python.org/) 3.7 or Higher
-- 📦 [pip](https://pypi.org/project/pip/) (Python Package Installer)
-- ♨️ [PyTorch](https://pytorch.org/) >= 1.7
-- ➕ [Git](https://git-scm.com/) Installed
-- ❗[NVIDIA GPU](https://www.nvidia.com/en-us/geforce/graphics-cards/) + [CUDA](https://developer.nvidia.com/cuda-downloads) (Optional)
-- 🐧[Linux](https://www.linux.org/pages/download/) (Optional)
 
-### 💾 Steps
-1. **Clone the Repository**
-```bash
-git clone https://github.com/Md-Siam-Mia-Code/GFPGAN.git
-cd GFPGAN
-```
+- **OS:** Windows, Linux, or macOS.
+- **Conda:** [Anaconda](https://www.anaconda.com/download) or [Miniconda](https://docs.conda.io/en/latest/miniconda.html) must be installed.
+- **Git:** Required to clone the repository. [Install Git](https://git-scm.com/).
+- **NVIDIA GPU (Optional):** For significantly faster processing.
 
-2. **Create a Virtual Environment**
-```bash
-conda create -n GFPGAN python=3.7 -y
-conda activate GFPGAN
-```
-3. **Install PyTorch**
- ```bash
-# Try to make sure your drivers are updated
-# For NVIDIA GPU
-conda install pytorch torchvision torchaudio pytorch-cuda=<your_cuda_version> -c pytorch -c nvidia -y
+### 💾 Setup Instructions
 
-# For CPU
-conda install pytorch torchvision torchaudio cpuonly -c pytorch -y
-```
+#### For Windows Users (Easy 1-Click Method)
 
-4. **Install Dependencies**
-```bash
-pip install -r requirements.txt
-```
+This is the recommended method for Windows.
 
-5. **Run Setup**
-```bash
-python setup.py develop
-```
-6. **Download Models**
-   🚀 *The models will be automatically downloaded when you run the application for the first time.*
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/Md-Siam-Mia-Code/GFPGAN.git
+    cd GFPGAN
+    ```
+2.  **Run the Script:**
+    Simply double-click the `run.bat` file.
+    - The script will automatically detect your hardware and guide you through a one-time setup process to create the environment and install all dependencies.
+    - On future runs, it will skip the setup and launch the app directly.
+
+#### Manual Installation (For Linux, macOS, and advanced users)
+
+1.  **Clone the Repository:**
+    ```bash
+    git clone https://github.com/Md-Siam-Mia-Code/GFPGAN.git
+    cd GFPGAN
+    ```
+2.  **Create and Activate Conda Environment:**
+    ```bash
+    conda create -n GFPGAN python=3.7 -y
+    conda activate GFPGAN
+    ```
+3.  **Install PyTorch:**
+    - **For NVIDIA GPU (Recommended):** Find your CUDA version with `nvidia-smi` and run the appropriate command. For example, for CUDA 11.8:
+      ```bash
+      conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia -y
+      ```
+    - **For CPU Only:**
+      ```bash
+      conda install pytorch torchvision torchaudio cpuonly -c pytorch -y
+      ```
+4.  **Install Other Dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
 ---
 
 ## 💻 Usage
+
 ### ▶️ Running the Application
-**Start the Flask Server:**
-```bash
-python gfpgan.py
-```
 
-**For one-click RUN**
-    Create a new GFPGAN.bat Batch File on your GFPGAN directory using the script given below:
+- **Windows:** Double-click `run.bat`.
+- **Manual Start (All OS):**
+  1.  Activate the conda environment: `conda activate GFPGAN`
+  2.  Run the application: `python app.py`
 
-    @echo off
+### 🌐 Accessing the Web Interface
 
-    :: Activate the conda environment for GFPGAN
-    CALL "C:\ProgramData\<Your Anaconda distribution name>\Scripts\activate.bat" GFPGAN
+Open your favorite web browser and navigate to:
+**[http://127.0.0.1:3005](http://127.0.0.1:3005)**
 
-    :: Navigate to the GFPGAN directory (Change path according to yours)
-    cd /D path/to/your/GFPGAN
-    
-    :: Run the GFPGAN web interface script
-    python gfpgan.py
+### 📝 How to Use
 
-**Access the Web Interface:**  
-🌐 Open your browser and visit: [http://127.0.0.1:3005](http://127.0.0.1:3005)
-
-### 📸 Enhancing Images
-- **Upload Images:** Drag and drop or select `.jpg`, `.jpeg`, and `.png` files.
-- **Enhance:** Click the "✨ Enhance" button.
-- **View:** Enhanced images will appear in the results section.
-- **Download:** Save results individually or as a ZIP file using the "📥 Download All" button.
-- **Clear History:** Clear both input and output images from the server with one click.
-- **Reload Backend:** A dedicated button to reload your backend.
+1.  **Upload Images:** Drag and drop your images (`.jpg`, `.png`) onto the designated area or click to browse.
+2.  **Set Options:**
+    - Check the **"Upscale Background"** box for the highest quality (slower).
+    - Uncheck it for fast, face-only restoration (recommended for CPU users).
+3.  **Enhance:** Click the "Enhance" button.
+    - **Note:** The very first enhancement will be slow as the AI models are loaded into memory for the first time. Subsequent runs will be much faster.
+4.  **Download:** Save your enhanced images individually from the preview, or click "Download All" to get a `.zip` file.
+5.  **Clear:** Click "Clear History" to remove all uploaded and enhanced images from the server.
 
 ---
 
 ## 🤝 Contributing
-🎉 **Contributions are welcome!** 
-- 🌟 Fork the repository
-- 📂 Create a new branch (`git checkout -b feature/YourFeature`)
-- 📝 Commit your changes (`git commit -m 'Add some feature'`)
-- 📤 Push to the branch (`git push origin feature/YourFeature`)
-- 🔃 Open a Pull Request
+
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Md-Siam-Mia-Code/GFPGAN/issues).
+
+1.  Fork the repository.
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a Pull Request.
 
 ---
 
 ## 📜 License
-- The main source code and models are provided by an open-source project named [GFPGAN](https://github.com/TencentARC/GFPGAN) by [TencentARC](https://github.com/TencentARC/GFPGAN)
+
+This project's Web UI and automation scripts are open-source. The core AI models and restoration algorithms are provided by the original creators:
+
+- **GFPGAN:** [TencentARC](https://github.com/TencentARC/GFPGAN)
+- **Real-ESRGAN:** [xinntao](https://github.com/xinntao/Real-ESRGAN)
+
+Please adhere to their respective licenses when using or distributing the models.
+
 ---
 
-# ❤️ *Happy Enhancing!* 💯
+<div align="center">
+  <h3>❤️ Happy Enhancing! ❤️</h3>
+</div>

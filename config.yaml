@@ -1,0 +1,41 @@
+# ------------------
+#  App Configuration
+# ------------------
+# Flask server settings
+server:
+  host: "0.0.0.0"
+  port: 3005
+
+# Folders for input and output images
+input_folder: "Input"
+output_folder: "Output"
+
+# --------------------
+#  Model Configuration
+# --------------------
+# Main upscale factor for GFPGAN. This isn't used by the UI yet, but is good to have.
+default_upscale_factor: 4
+
+# Tile size for the background upsampler to control VRAM usage.
+# Lower this if you get out-of-memory errors (e.g., 256).
+bg_tile_size: 400
+
+# Paths and download URLs for the models.
+# The app will automatically download them if they are missing.
+models:
+  gfpgan:
+    path: "gfpgan/weights/GFPGANv1.4.pth"
+    url: "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.4/GFPGANv1.4.pth"
+    name: "GFPGANv1.4"
+  realesrgan:
+    path: "gfpgan/weights/RealESRGAN_x4plus.pth"
+    url: "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.1.0/RealESRGAN_x4plus.pth"
+    name: "RealESRGAN_x4plus"
+  face_detection:
+    path: "gfpgan/weights/detection_Resnet50_Final.pth"
+    url: "https://github.com/xinntao/facexlib/releases/download/v0.1.0/detection_Resnet50_Final.pth"
+    name: "Face Detection"
+  face_parsing:
+    path: "gfpgan/weights/parsing_parsenet.pth"
+    url: "https://github.com/xinntao/facexlib/releases/download/v0.2.2/parsing_parsenet.pth"
+    name: "Face Parsing"
