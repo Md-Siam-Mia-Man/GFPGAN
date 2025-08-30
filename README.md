@@ -56,7 +56,7 @@ This is the recommended method for Windows.
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/Md-Siam-Mia-Code/GFPGAN.git
+    git clone https://github.com/Md-Siam-Mia-Man/GFPGAN.git
     cd GFPGAN
     ```
 2.  **Run the Script:**
@@ -68,7 +68,7 @@ This is the recommended method for Windows.
 
 1.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/Md-Siam-Mia-Code/GFPGAN.git
+    git clone https://github.com/Md-Siam-Mia-Man/GFPGAN.git
     cd GFPGAN
     ```
 2.  **Create and Activate Conda Environment:**
@@ -121,7 +121,7 @@ Open your favorite web browser and navigate to:
 
 ## 🤝 Contributing
 
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Md-Siam-Mia-Code/GFPGAN/issues).
+Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/Md-Siam-Mia-Man/GFPGAN/issues).
 
 1.  Fork the repository.
 2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
